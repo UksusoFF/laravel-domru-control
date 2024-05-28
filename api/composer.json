@@ -1,0 +1,74 @@
+{
+    "name": "uksusoff/laravel-domru-control",
+    "type": "project",
+    "description": "laravel-domru-control",
+    "keywords": [],
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3",
+        "guzzlehttp/guzzle": "^7.2",
+        "laravel/framework": "^11.0",
+        "orchid/platform": "^14.24"
+    },
+    "require-dev": {
+        "adamwojs/php-cs-fixer-phpdoc-force-fqcn": "^2.0",
+        "barryvdh/laravel-ide-helper": "*",
+        "fakerphp/faker": "^1.23",
+        "nunomaduro/collision": "^8.1",
+        "nunomaduro/larastan": "^2.0",
+        "spatie/laravel-ignition": "^2.4",
+        "uksusoff/php-cs-fixer-config": "^0.14.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --graceful --ansi"
+        ],
+        "fresh": [
+            "@php artisan migrate:fresh",
+            "@php artisan orchid:admin admin admin@admin.com password"
+        ],
+        "cs-fix": [
+            "@php artisan ide-helper:generate",
+            "@php artisan ide-helper:models --write --reset",
+            "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php"
+        ],
+        "ca-run": [
+            "vendor/bin/phpstan analyse --memory-limit=2G"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/UksusoFF/php-cs-fixer-config"
+        }
+    ]
+}

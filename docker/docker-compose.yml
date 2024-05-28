@@ -1,0 +1,35 @@
+version: "3.7"
+
+services:
+    php:
+        container_name: ${APP_NAME}-php
+        build:
+            context: ..
+            dockerfile: docker/php/Dockerfile
+        volumes:
+            - ./../api:/var/www/api
+            - ./.env:/var/www/api/.env
+            - ./php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+        extra_hosts:
+            - host.docker.internal:host-gateway
+
+    nginx:
+        container_name: ${APP_NAME}-nginx
+        image: nginx:alpine
+        restart: unless-stopped
+        depends_on:
+            - php
+        environment:
+            FASTCGI_HOST: ${APP_NAME}-php
+            APP_NAME: ${APP_NAME}
+            APP_PORT: ${APP_PORT}
+            LISTEN_OPTIONS: ssl
+        volumes:
+            - ./../api:/var/www/api
+            - ./data/logs/nginx:/var/log/nginx
+            - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template
+            - ./nginx/ssl.conf:/ssl/ssl.conf
+            - ./data/private/ssl.crt:/ssl/ssl.crt
+            - ./data/private/ssl.key:/ssl/ssl.key
+        ports:
+            - ${APP_PORT}:${APP_PORT}

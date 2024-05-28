@@ -1,0 +1,20 @@
+* text=auto
+* text eol=lf
+*.css linguist-vendored
+*.scss linguist-vendored
+*.js linguist-vendored
+*.gif     -text diff
+*.ico     -text diff
+*.jpg     -text diff
+*.png     -text diff
+*.eot     -text diff
+*.otf     -text diff
+*.ttf     -text diff
+*.woff    -text diff
+
+*.blade.php diff=html
+*.html diff=html
+*.md diff=markdown
+*.php diff=php
+
+.styleci.yml export-ignore
