@@ -8,6 +8,7 @@ use App\Models\Account;
 use App\Services\DomruService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PlaceController
 {
@@ -27,7 +28,7 @@ class PlaceController
         ]);
     }
 
-    public function snap(Account $account, string $control): JsonResponse
+    public function snap(Account $account, string $control): BinaryFileResponse|JsonResponse
     {
         try {
             $path = DomruService::snap($account, $control);
@@ -38,10 +39,7 @@ class PlaceController
             ]);
         }
 
-        return response()->json([
-            'success' => true,
-            'path' => $path,
-        ]);
+        return response()->file($path);
     }
 
     public function rtsp(Account $account, string $camera): JsonResponse
