@@ -16,7 +16,7 @@ class EditAccountStep
     public static function fields(Account $model): array
     {
         $place = DomruService::places($model)->firstWhere('place.id', $model->place);
-        $controls = Arr::get($place, 'place.accessControls');
+        $controls = Arr::get($place, 'place.accessControls', []); // TODO: Если пусто - авторизовывать заново
         $cameras = DomruService::cameras($model);
 
         $fields = [
