@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Orchid\Models\Account\AccountSteps;
 
 use App\Models\Account;
+use App\Models\AccountStep;
 use App\Services\DomruService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Orchid\Screen\Fields\Group;
@@ -16,7 +18,7 @@ class EditAccountStep
     public static function fields(Account $model): array
     {
         $place = DomruService::places($model)->firstWhere('place.id', $model->place);
-        $controls = Arr::get($place, 'place.accessControls', []); // TODO: Если пусто - авторизовывать заново
+        $controls = Arr::get($place, 'place.accessControls', []);
         $cameras = DomruService::cameras($model);
 
         $fields = [
@@ -28,6 +30,14 @@ class EditAccountStep
                 ->value($model->refresh)
                 ->title(__('Refresh')),
         ];
+
+        if (empty($controls)) {
+            $model->step = AccountStep::INIT;
+
+            $model->save();
+
+            throw new Exception('Token expired');
+        }
 
         foreach ($controls as $control) {
             $controlId = Arr::get($control, 'id');
