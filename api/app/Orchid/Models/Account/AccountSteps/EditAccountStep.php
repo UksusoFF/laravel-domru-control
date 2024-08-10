@@ -32,6 +32,9 @@ class EditAccountStep
         ];
 
         if (empty($controls)) {
+            $model->code = null;
+            $model->token = null;
+            $model->refresh = null;
             $model->step = AccountStep::INIT;
 
             $model->save();
