@@ -22,13 +22,15 @@ class DomruService
                 ->withUserAgent(self::$USER_AGENT)
                 ->get("https://myhome.novotelecom.ru/auth/v2/login/{$phone}");
 
+            logger()->debug($request->body());
+
             return collect($request->json());
         });
     }
 
     public static function request(Account $account): void
     {
-        Http::acceptJson()
+        $request = Http::acceptJson()
             ->asJson()
             ->withUserAgent(self::$USER_AGENT)
             ->withBody(json_encode([
@@ -40,26 +42,28 @@ class DomruService
                 'profileId' => $account->profile,
             ], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR))
             ->post("https://myhome.novotelecom.ru/auth/v2/confirmation/{$account->phone}");
+
+        logger()->debug($request->body());
     }
 
     public static function confirm(Account $account): array
     {
-        return cache()->remember("domru.confirm.{$account->id}", Carbon::now()->endOfHour(), function() use ($account) {
-            $request = Http::acceptJson()
-                ->asJson()
-                ->withUserAgent(self::$USER_AGENT)
-                ->withBody(json_encode([
-                    'confirm1' => $account->code,
-                    'subscriberId' => $account->subscriber,
-                    'login' => $account->phone,
-                    'operatorId' => $account->operator,
-                    'accountId' => $account->account,
-                    'profileId' => $account->profile,
-                ], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR))
-                ->post("https://myhome.novotelecom.ru/auth/v2/auth/{$account->phone}/confirmation");
+        $request = Http::acceptJson()
+            ->asJson()
+            ->withUserAgent(self::$USER_AGENT)
+            ->withBody(json_encode([
+                'confirm1' => $account->code,
+                'subscriberId' => $account->subscriber,
+                'login' => $account->phone,
+                'operatorId' => $account->operator,
+                'accountId' => $account->account,
+                'profileId' => $account->profile,
+            ], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR))
+            ->post("https://myhome.novotelecom.ru/auth/v2/auth/{$account->phone}/confirmation");
 
-            return $request->json();
-        });
+        logger()->debug($request->body());
+
+        return $request->json();
     }
 
     public static function places(Account $account): Collection
@@ -71,6 +75,8 @@ class DomruService
                 ->withHeader('Authorization', "Bearer {$account->token}")
                 ->withHeader('Operator', $account->operator)
                 ->get('https://myhome.novotelecom.ru/rest/v1/subscriberplaces');
+
+            logger()->debug($request->body());
 
             return collect($request->json('data'));
         });
@@ -85,6 +91,8 @@ class DomruService
                 ->withHeader('Authorization', "Bearer {$account->token}")
                 ->withHeader('Operator', $account->operator)
                 ->get('https://myhome.novotelecom.ru/rest/v1/forpost/cameras');
+
+            logger()->debug($request->body());
 
             return collect($request->json('data'));
         });
@@ -101,6 +109,8 @@ class DomruService
             ], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR))
             ->post("https://myhome.novotelecom.ru/rest/v1/places/{$account->place}/accesscontrols/{$control}/actions");
 
+        logger()->debug($request->body());
+
         $error = $request->json('data.errorMessage');
 
         if ($error !== null) {
@@ -115,6 +125,8 @@ class DomruService
             ->withUserAgent(self::$USER_AGENT)
             ->withHeader('Authorization', "Bearer {$account->token}")
             ->get("https://myhome.novotelecom.ru/rest/v1/places/{$account->place}/accesscontrols/{$control}/videosnapshots");
+
+        logger()->debug($request->body());
 
         $path = storage_path('tmp/snap.jpg');
 
@@ -131,6 +143,8 @@ class DomruService
             ->withHeader('Authorization', "Bearer {$account->token}")
             ->withHeader('Operator', $account->operator)
             ->get("https://myhome.novotelecom.ru/rest/v1/forpost/cameras/{$camera}/video");
+
+        logger()->debug($request->body());
 
         $error = $request->json('errorMessage');
 
