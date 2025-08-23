@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid;
 
+use App\Http\Middleware\VerifyCsrfToken;
 use App\Orchid\Models\Account\AccountEditScreen;
 use App\Orchid\Models\Account\AccountListScreen;
 use App\Orchid\Models\DashboardScreen;
@@ -12,6 +13,7 @@ use App\Orchid\Models\Role\RoleListScreen;
 use App\Orchid\Models\User\UserEditScreen;
 use App\Orchid\Models\User\UserListScreen;
 use App\Orchid\Models\User\UserProfileScreen;
+use Aranyasen\LaravelAdminer\AdminerAutologinController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Orchid\Support\Facades\Dashboard;
@@ -96,6 +98,13 @@ class RouteServiceProvider extends ServiceProvider
                 Route::screen('account/create', AccountEditScreen::class)->name('admin.accounts.create');
                 Route::screen('account/{model}/edit', AccountEditScreen::class)->name('admin.accounts.edit');
                 Route::screen('accounts', AccountListScreen::class)->name('admin.accounts');
+
+                Route::prefix('system')->group(function(): void {
+                    Route::any('db', [AdminerAutologinController::class, 'index'])->withoutMiddleware([
+                        VerifyCsrfToken::class,
+                    ]);
+                });
+
             });
     }
 }
