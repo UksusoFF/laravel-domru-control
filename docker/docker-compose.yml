@@ -13,6 +13,19 @@ services:
         extra_hosts:
             - host.docker.internal:host-gateway
 
+    database:
+        container_name: ${APP_NAME}-db
+        image: mysql:5.7
+        environment:
+            MYSQL_DATABASE: ${APP_NAME}
+            MYSQL_USER: ${APP_NAME}
+            MYSQL_PASSWORD: ${APP_NAME}
+            MYSQL_ROOT_PASSWORD: ${APP_NAME}
+        volumes:
+            - ./data/db:/var/lib/mysql
+        ports:
+            - '3306:3306'
+
     nginx:
         container_name: ${APP_NAME}-nginx
         image: nginx:alpine

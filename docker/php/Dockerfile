@@ -1,4 +1,4 @@
-FROM php:8.3-fpm
+FROM php:8.4-fpm
 
 WORKDIR /var/www/api
 
@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y \
     jpegoptim optipng pngquant gifsicle libwebp-dev \
     libpq-dev \
     libicu-dev \
-    git
+    git \
+    mariadb-client-compat
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -26,6 +27,7 @@ RUN docker-php-ext-install exif
 RUN docker-php-ext-install pdo pdo_pgsql pgsql
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install intl
+RUN docker-php-ext-install pdo pdo_mysql
 
 #RUN pecl install xdebug-3.3 && docker-php-ext-enable xdebug
 
