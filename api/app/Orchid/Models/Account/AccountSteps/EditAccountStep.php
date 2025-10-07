@@ -39,6 +39,8 @@ class EditAccountStep
 
             $model->save();
 
+            DomruService::forget();
+
             throw new Exception('Token expired');
         }
 

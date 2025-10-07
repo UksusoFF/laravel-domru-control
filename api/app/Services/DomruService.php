@@ -14,6 +14,11 @@ class DomruService
 {
     protected static string $USER_AGENT = 'myHomeErth/8 CFNetwork/1209 Darwin/20.2.0';
 
+    public static function forget(): void
+    {
+        cache()->flush();
+    }
+
     public static function login(string $phone): Collection
     {
         return cache()->remember("domru.login.{$phone}", Carbon::now()->endOfHour(), function() use ($phone) {
